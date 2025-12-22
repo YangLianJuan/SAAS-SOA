@@ -7,7 +7,7 @@
         <RouterLink class="basic-layout__link" to="/device">设备</RouterLink>
       </nav>
       <div class="basic-layout__actions">
-        <BaseButton size="sm" @click="handleLogout">退出</BaseButton>
+        <a-button size="small" @click="handleLogout">退出</a-button>
       </div>
     </header>
     <main class="basic-layout__main">
@@ -19,7 +19,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 
-import BaseButton from '@/components/base/BaseButton/index.vue'
 import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
@@ -68,4 +67,3 @@ const handleLogout = async () => {
   padding: @spacing-lg;
 }
 </style>
-

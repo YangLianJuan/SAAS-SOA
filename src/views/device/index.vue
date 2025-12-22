@@ -7,6 +7,7 @@
     <ProTable
       title="设备列表"
       :columns="columns"
+      :loading="loading"
       :data-source="devices"
       :row-key="(r) => String((r as Device).id)"
     >
@@ -23,20 +24,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 
-import BaseCard from '@/components/base/BaseCard/index.vue'
-import ProTable from '@/components/business/ProTable/index.vue'
-import StatusTag from '@/components/business/StatusTag/index.vue'
+import BaseCard from '@/components/BaseCard/index.vue'
+import ProTable from '@/components/ProTable/index.vue'
+import StatusTag from '@/components/StatusTag/index.vue'
+import { useTable } from '@/composables/useTable'
+import { getDeviceList, type Device, type DeviceStatusType } from './device.api'
 import DeviceStatus from './components/DeviceStatus.vue'
-
-type DeviceStatusType = 'online' | 'offline' | 'error'
-
-type Device = {
-  id: string
-  name: string
-  status: DeviceStatusType
-}
 
 const columns = computed(() => [
   { key: 'name', title: '设备名称' },
@@ -44,16 +39,17 @@ const columns = computed(() => [
   { key: 'actions', title: '详情' },
 ])
 
-const devices = computed<Device[]>(() => [
-  { id: 'd1', name: '温控器-01', status: 'online' },
-  { id: 'd2', name: '网关-02', status: 'offline' },
-  { id: 'd3', name: '摄像头-03', status: 'error' },
-])
+const { loading, dataSource: devices, run } = useTable<Device>()
 
 const statusText = (s: DeviceStatusType) => {
   if (s === 'online') return '在线'
   if (s === 'offline') return '离线'
   return '异常'
 }
+
+onMounted(() => {
+  void run(getDeviceList)
+})
 </script>
 
+<style scoped lang="less" src="./index.less"></style>

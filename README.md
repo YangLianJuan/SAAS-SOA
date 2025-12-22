@@ -45,52 +45,29 @@ npm run build
 
 ```
 src
-├── api/                        # 接口层（按领域拆分文件）
-│   ├── auth.ts                 # 登录/鉴权相关接口（示例：login）
-│   ├── user.ts                 # 用户相关接口（示例：getProfile）
-│   └── index.ts                # api 聚合导出
+├── api/                        # 接口层（通用接口）
+│   └── index.ts 
 │
 ├── assets/                     # 静态资源（按需维护）
 │   ├── images/                 # 图片资源
 │   └── icons/                  # 图标资源
 │
-├── styles/                     # ⭐ 样式体系核心（分层：tokens/base/components/pages）
+├── styles/                     # ⭐ 样式体系核心
 │   ├── tokens/                 # 设计 Token（唯一真源）
-│   │   ├── color.less          # 颜色 Token（禁止手写色值）
-│   │   ├── spacing.less        # 间距 Token
-│   │   ├── radius.less         # 圆角 Token
-│   │   ├── font.less           # 字体 Token（基础字体族等）
-│   │   └── index.less          # Token 汇总入口（供全局注入）
+│   │   └── index.less          #  颜色 Token（禁止手写色值）、间距、 圆角、字体
 │   │
 │   ├── base/                   # 全局基础样式
-│   │   ├── reset.less          # reset + 统一 box-sizing
+│   │   ├── reset.less          # reset + 统一 box-sizing + Ant Design Vue 覆盖入口（集中维护）
 │   │   ├── global.less         # body 基线：背景、字体、默认文本色等
-│   │   └── ant-reset.less      # Ant Design Vue 覆盖入口（集中维护）
-│   │
-│   ├── components/             # 通用组件样式（不写页面差异）
-│   │   ├── card.less           # BaseCard 等通用卡片样式/变体
-│   │   ├── table.less          # ProTable 等通用表格样式
-│   │   └── form.less           # 表单通用样式（可扩展）
-│   │
-│   ├── pages/                  # 页面级样式（只服务页面）
-│   │   ├── dashboard.less      # Dashboard 页面样式（不外溢到组件层）
-│   │   └── device.less         # Device 页面样式（不外溢到组件层）
-│   │
 │   └── index.less              # 样式入口（main.ts 引入）
 │
-├── components/                 # ⭐ 通用组件库（分级：base/business）
-│   ├── base/                   # 原子 / 基础组件（无业务）
-│   │   ├── BaseCard/           # 基础卡片：slot + variant 变体
-│   │   ├── BaseButton/         # 基础按钮：尺寸/禁用等基础能力
-│   │   └── BaseEmpty/          # 空状态占位
-│   │
-│   ├── business/               # 业务可复用组件（可迁移）
-│   │   ├── StatCard/           # 统计卡片：Dashboard 常用业务块
-│   │   ├── StatusTag/          # 状态标签：online/offline/error
-│   │   ├── ProTable/           # 轻量表格容器：slot 化单元格
-│   │   └── EChart/             # 图表封装：统一 init/resize/销毁
-│   │
-│   └── index.ts                # 组件聚合导出（按需使用）
+├── components/                 # ⭐ 通用组件（只放“全局可复用”）
+│   └── BaseCard/
+│   ├── ProTable/
+│   ├── StatusTag/
+│   ├── ConfirmModal/
+│   ├── EChart/
+│   └── index.ts
 │
 ├── composables/                # 组合式逻辑（跨页面复用）
 │   ├── useTable.ts             # 表格数据加载/状态管理（轻量封装）
@@ -111,20 +88,24 @@ src
 │   ├── app.ts                  # 全局 UI 状态（主题/侧边栏等预留）
 │   └── permission.ts           # 路由/权限数据（目前返回静态路由）
 │
-├── views/                      # ⭐ 页面（仅组合，不做通用抽象）
+├── views/                      # ⭐ 业务模块（页面即模块）
 │   ├── dashboard/
-│   │   ├── index.vue               # Dashboard 页面入口
-│   │   └── components/            # Page 组件（不导出/不跨页复用）
-│   │       ├── DashboardStat.vue   # 统计区块
-│   │       └── DashboardChart.vue  # 图表区块（ECharts + Antd）
+│   │   ├── index.vue
+│   │   ├── index.less          # ✅ dashboard 模块样式
+│   │   └── device.api.ts       # ✅ 模块接口
+│   │   └── components/
+│   │       ├── DashboardStat.vue
+│   │       └── DashboardChart.vue
 │   │
 │   ├── device/
-│   │   ├── index.vue               # Device 页面入口
-│   │   └── components/            # Page 组件（不导出/不跨页复用）
-│   │       └── DeviceStatus.vue    # 设备详情片段
+│   │   ├── index.vue
+│   │   ├── index.less          # ✅ 模块样式
+│   │   └── device.api.ts       # ✅ 模块接口
 │   │
 │   └── login/
-│       └── index.vue           # 登录页（账号密码 + 登录跳转示例）
+│       ├── index.vue
+│       └── index.less          # ✅ 模块样式
+│       └── device.api.ts       # ✅ 模块接口
 │
 ├── utils/                      # 工具函数（纯函数/无 UI）
 │   ├── request.ts              # fetch 封装：baseUrl/token/错误处理
@@ -139,7 +120,7 @@ src
 
 ### 1）Token 层：设计唯一真源
 
-Token 位于 `src/styles/tokens/*`，例如 `src/styles/tokens/color.less`：
+Token 位于 `src/styles/tokens/index.less`：
 
 ```less
 @color-bg-page: #f5f7fa;
@@ -162,19 +143,14 @@ Token 位于 `src/styles/tokens/*`，例如 `src/styles/tokens/color.less`：
 - `src/styles/base/reset.less`：重置与基础 box-sizing
 - `src/styles/base/global.less`：`body` 背景、字体、默认文本色等全局基线
 
-### 3）Components 层：通用组件样式
+### 3）组件样式：跟随组件就近维护
 
-组件的通用类与变体放在 `src/styles/components/*`，例如卡片：
-
-```less
-.saas-card { /* ... */ }
-.saas-card--compact { /* ... */ }
-.saas-card--highlight { /* ... */ }
-```
+- 组件样式写在组件自身的 `<style scoped lang="less">` 内
+- 组件样式只使用 Token 变量，避免散落魔法值
 
 ### 4）Pages 层：页面级样式（只服务页面）
 
-- 页面样式位于 `src/styles/pages/*`
+- 页面样式位于 `src/views/*/index.less`
 - 页面样式永远不能影响组件层（不要写会外溢到组件库的选择器）
 
 样式入口统一从 `src/styles/index.less` 汇总，在 `src/main.ts` 引入。
@@ -189,7 +165,7 @@ Token 位于 `src/styles/tokens/*`，例如 `src/styles/tokens/color.less`：
 
 ### BaseCard 规范实现
 
-`components/base/BaseCard/index.vue`：
+`src/components/BaseCard/index.vue`：
 
 ```vue
 <template>
@@ -201,7 +177,7 @@ Token 位于 `src/styles/tokens/*`，例如 `src/styles/tokens/color.less`：
 </template>
 ```
 
-变体样式集中在 `src/styles/components/card.less`，页面不要复制卡片实现。
+页面不要复制卡片实现。
 
 ### 首页卡片 vs 设备卡片：正确解法
 
@@ -212,18 +188,16 @@ Token 位于 `src/styles/tokens/*`，例如 `src/styles/tokens/color.less`：
 
 正确做法：
 
-- 业务组件（可复用）：`StatCard`（见 `src/components/business/StatCard/index.vue`）
-- 页面差异交给 Page 层：
-  - Dashboard 直接使用 `StatCard`
-  - Device 页面用 `BaseCard variant="compact"` 组合出差异 UI
+- 通用能力沉淀到 `src/components/`（例如 `BaseCard`）
+- 页面差异交给 Page 层（`src/views/*`），避免把页面差异抽进组件库
 
 ## 七、第三方组件集成（Ant Design Vue / ECharts）
 
 ### Ant Design Vue 使用规范
 
 - Ant Design Vue 用于「复杂、通用且成熟」的 UI 能力（如表单控件、弹窗、分段器等）
-- 业务一致性优先：外观由 Token 控制，必要时在 `styles/base/ant-reset.less` 做集中覆盖
-- 页面层可直接使用 `a-*` 组件；Base/Business 组件只有在“通用能力”场景才引入
+- 业务一致性优先：外观由 Token 控制，必要时在 `src/styles/base/reset.less` 做集中覆盖
+- 页面层可直接使用 `a-*` 组件；通用组件只在“通用能力”场景才引入
 
 全局接入位置：
 
@@ -235,12 +209,12 @@ Token 位于 `src/styles/tokens/*`，例如 `src/styles/tokens/color.less`：
 
 ### ECharts 使用规范
 
-- ECharts 一律通过 Business 层封装组件使用，避免页面内直接操作实例导致维护与复用成本上升
+- ECharts 一律通过通用组件封装使用，避免页面内直接操作实例导致维护与复用成本上升
 - 图表组件只接受 `option` 等纯数据输入，不把页面差异抽进组件内部
 
 封装组件：
 
-- `src/components/business/EChart/index.vue`：`option` + `autoresize` + `height`
+- `src/components/EChart/index.vue`：`option` + `autoresize` + `height`
 
 页面示例：
 
@@ -273,14 +247,14 @@ views/dashboard/
 
 - 请求封装：`src/utils/request.ts`
 - token 管理：`src/utils/auth.ts`（localStorage）
-- 接口层：`src/api/*`
+- 接口层：`src/api/index.ts`
 
 开发阶段无后端也可跑通：
 
-- `src/api/auth.ts` / `src/api/user.ts` 在请求失败时会降级返回 mock 数据，保证页面能联调 UI 流程
+- `src/api/index.ts` 在请求失败时会降级返回 mock 数据，保证页面能联调 UI 流程
 
 ## 十一、协作规则（落地版）
 
 - 新增页面：只在 `src/views/<page>/` 内增量开发，页面内组件放 `components/`
-- 新增通用能力：优先放 `components/base` 或 `components/business`，不要把页面差异抽进组件库
-- 新增样式：先补 Token，再落 `styles/components` 或 `styles/pages`，禁止在页面里散落魔法值
+- 新增通用能力：优先放 `src/components/`，不要把页面差异抽进组件库
+- 新增样式：先补 Token，再落组件自身或 `src/views/*/index.less`，禁止在页面里散落魔法值

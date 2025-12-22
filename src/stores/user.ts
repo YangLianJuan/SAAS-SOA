@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
-import { login as loginApi } from '@/api/auth'
+import { login as loginApi } from '@/api'
 import { clearToken, getToken, setToken } from '@/utils/auth'
 
 type UserProfile = {
@@ -32,4 +32,3 @@ export const useUserStore = defineStore('user', () => {
 
   return { token, profile, roles, isAuthed, login, logout }
 })
-

@@ -12,11 +12,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import type { EChartsOption } from 'echarts'
 
-import BaseCard from '@/components/base/BaseCard/index.vue'
-import EChart from '@/components/business/EChart/index.vue'
+import BaseCard from '@/components/BaseCard/index.vue'
+import EChart from '@/components/EChart/index.vue'
+import { getDeviceTrend } from '../device.api'
 
 type Range = '7d' | '30d'
 
@@ -26,22 +27,31 @@ const rangeOptions = [
   { label: '近 30 天', value: '30d' },
 ]
 
-const option = computed<EChartsOption>(() => {
-  const days = range.value === '7d' ? 7 : 30
-  const xAxis = Array.from({ length: days }, (_, i) => `${i + 1}`)
-  const base = range.value === '7d' ? 80 : 60
-  const series = xAxis.map((_, i) => base + Math.round(Math.sin(i / 2) * 12) + i)
+const trend = ref<{ labels: string[]; values: number[] }>({ labels: [], values: [] })
 
+const loadTrend = async () => {
+  trend.value = await getDeviceTrend(range.value)
+}
+
+onMounted(() => {
+  void loadTrend()
+})
+
+watch(range, () => {
+  void loadTrend()
+})
+
+const option = computed<EChartsOption>(() => {
   return {
     grid: { left: 10, right: 10, top: 20, bottom: 10, containLabel: true },
     tooltip: { trigger: 'axis' },
-    xAxis: { type: 'category', data: xAxis, boundaryGap: false },
+    xAxis: { type: 'category', data: trend.value.labels, boundaryGap: false },
     yAxis: { type: 'value' },
     series: [
       {
         type: 'line',
         smooth: true,
-        data: series,
+        data: trend.value.values,
         areaStyle: {},
       },
     ],
@@ -62,4 +72,3 @@ const option = computed<EChartsOption>(() => {
   font-weight: 700;
 }
 </style>
-

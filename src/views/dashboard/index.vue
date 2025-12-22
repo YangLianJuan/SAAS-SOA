@@ -16,3 +16,5 @@ import DashboardChart from './components/DashboardChart.vue'
   height: @spacing-lg;
 }
 </style>
+
+<style scoped lang="less" src="./index.less"></style>

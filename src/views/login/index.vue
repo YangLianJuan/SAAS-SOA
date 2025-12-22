@@ -18,7 +18,7 @@
             autocomplete="current-password"
           />
         </label>
-        <BaseButton type="submit">进入系统</BaseButton>
+        <a-button type="primary" html-type="submit">进入系统</a-button>
       </form>
     </BaseCard>
   </div>
@@ -27,8 +27,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 
-import BaseButton from '@/components/base/BaseButton/index.vue'
-import BaseCard from '@/components/base/BaseCard/index.vue'
+import BaseCard from '@/components/BaseCard/index.vue'
 import { useForm } from '@/composables/useForm'
 import { useUserStore } from '@/stores/user'
 
@@ -42,41 +41,4 @@ const handleSubmit = async () => {
 }
 </script>
 
-<style scoped lang="less">
-.login {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: @spacing-lg;
-}
-
-.login__card {
-  width: 360px;
-}
-
-.login__title {
-  font-weight: 700;
-  padding-bottom: @spacing-md;
-}
-
-.login__form {
-  display: grid;
-  gap: @spacing-md;
-}
-
-.login__label {
-  font-size: 12px;
-  color: @color-text-secondary;
-  margin-bottom: 6px;
-}
-
-.login__input {
-  width: 100%;
-  border: 1px solid @color-border;
-  border-radius: @radius-sm;
-  padding: 8px 10px;
-  outline: none;
-}
-</style>
-
+<style scoped lang="less" src="./index.less"></style>
