@@ -14,9 +14,9 @@
 
 核心思想：
 
-- 样式分层：Token → Base → Components → Pages
-- 组件分级：Base（无业务）→ Business（可复用业务）→ Page（仅服务页面）
-- 页面组织：Page 组合 Business/Base，并把差异收敛在 Page 层
+- 样式分层：Token → Base → Component → Page
+- 组件分级：Base（基础封装）→ Pro（通用业务能力封装）→ Page（仅服务页面）
+- 页面组织：Page 组合 Pro/Base，并把差异收敛在 Page 层
 
 ## 二、技术栈
 
@@ -53,16 +53,16 @@ src
 │   └── icons/                  # 图标资源
 │
 ├── styles/                     # ⭐ 样式体系核心
-│   ├── tokens/                 # 设计 Token（唯一真源）
-│   │   └── index.less          #  颜色 Token（禁止手写色值）、间距、 圆角、字体
+│   ├── design-system/          # 设计 Token（唯一真源）
+│   │   └── index.less          #  颜色 Token（业务色值禁止手写）、间距、圆角、字体
 │   │
 │   ├── base/                   # 全局基础样式
-│   │   ├── reset.less          # reset + 统一 box-sizing + Ant Design Vue 覆盖入口（集中维护）
+│   │   ├── reset.less          # reset + 统一 box-sizing（如需 Ant Design Vue 覆盖，也集中在这里）
 │   │   ├── global.less         # body 基线：背景、字体、默认文本色等
 │   └── index.less              # 样式入口（main.ts 引入）
 │
 ├── components/                 # ⭐ 通用组件（只放“全局可复用”）
-│   └── BaseCard/
+│   ├── BaseCard/
 │   ├── ProTable/
 │   ├── StatusTag/
 │   ├── ConfirmModal/
@@ -92,7 +92,7 @@ src
 │   ├── dashboard/
 │   │   ├── index.vue
 │   │   ├── index.less          # ✅ dashboard 模块样式
-│   │   └── device.api.ts       # ✅ 模块接口
+│   │   ├── device.api.ts       # ✅ 模块接口
 │   │   └── components/
 │   │       ├── DashboardStat.vue
 │   │       └── DashboardChart.vue
@@ -104,7 +104,7 @@ src
 │   │
 │   └── login/
 │       ├── index.vue
-│       └── index.less          # ✅ 模块样式
+│       ├── index.less          # ✅ 模块样式
 │       └── device.api.ts       # ✅ 模块接口
 │
 ├── utils/                      # 工具函数（纯函数/无 UI）
@@ -120,7 +120,7 @@ src
 
 ### 1）Token 层：设计唯一真源
 
-Token 位于 `src/styles/tokens/index.less`：
+Token 位于 `src/styles/design-system/index.less`：
 
 ```less
 @color-bg-page: #f5f7fa;
@@ -131,11 +131,17 @@ Token 位于 `src/styles/tokens/index.less`：
 
 @color-border: #f0f0f0;
 @color-primary: #1677ff;
+
+@spacing-sm: 8px;
+@spacing-md: 12px;
+
+@radius-sm: 6px;
+@radius-card: 10px;
 ```
 
 规则：
 
-- 任何人不允许直接写颜色值，必须从 Token 取
+- 业务 UI 的颜色（背景/文字/边框等）不要直接写色值，必须从 Token 取
 - Token 会被全局注入 Less（见 `vite.config.ts` 的 `css.preprocessorOptions.less.additionalData`），SFC 的 `<style lang="less">` 可直接使用 `@color-*` 等变量
 
 ### 2）Base 层：全局基础样式
@@ -146,7 +152,7 @@ Token 位于 `src/styles/tokens/index.less`：
 ### 3）组件样式：跟随组件就近维护
 
 - 组件样式写在组件自身的 `<style scoped lang="less">` 内
-- 组件样式只使用 Token 变量，避免散落魔法值
+- 组件样式优先使用 Token 变量，避免散落魔法值
 
 ### 4）Pages 层：页面级样式（只服务页面）
 
@@ -155,12 +161,40 @@ Token 位于 `src/styles/tokens/index.less`：
 
 样式入口统一从 `src/styles/index.less` 汇总，在 `src/main.ts` 引入。
 
+### 5）防耦合红线（必须遵守）
+
+🔴 红线 1：页面样式禁止依赖组件 DOM 结构
+
+- 页面样式禁止以通用组件的 class / DOM 结构作为选择器
+
+```less
+/* ❌ 禁止 */
+.dashboard {
+  .saas-card__footer {
+    padding: 0;
+  }
+}
+```
+
+🔴 红线 2：Design System 变量只允许“语义”，禁止“实现细节”
+
+✅ 推荐（语义）
+
+- `@color-bg-card`
+- `@spacing-md`
+- `@radius-card`
+
+❌ 不推荐（实现细节）
+
+- `@card-padding-12`
+- `@table-header-bg-gray`
+
 ## 六、组件体系设计（核心）
 
 组件分级原则：
 
-- Base：纯展示/基础交互，不含业务语义
-- Business：可复用的业务组件，允许包含轻量业务语义，但仍保持可迁移
+- Base：基础封装（样式统一、交互一致），不含业务语义
+- Pro：通用业务能力封装（例如 `ProTable` 的请求/分页/插槽约定）
 - Page：只服务当前页面的组件，不导出、不跨页面复用
 
 ### BaseCard 规范实现
@@ -169,11 +203,15 @@ Token 位于 `src/styles/tokens/index.less`：
 
 ```vue
 <template>
-  <div class="saas-card" :class="variantClass">
-    <slot name="header" />
+  <a-card class="saas-card" :class="variantClass" :bordered="bordered">
+    <template v-if="$slots.header" #title>
+      <slot name="header" />
+    </template>
     <slot />
-    <slot name="footer" />
-  </div>
+    <div v-if="$slots.footer" class="saas-card__footer">
+      <slot name="footer" />
+    </div>
+  </a-card>
 </template>
 ```
 
