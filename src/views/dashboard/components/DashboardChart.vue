@@ -2,7 +2,7 @@
   <BaseCard>
     <template #header>
       <div class="dashboard-chart__header">
-        <div class="dashboard-chart__title">设备趋势</div>
+        <div class="dashboard-chart__title">{{ t('dashboard.chart.title') }}</div>
         <a-segmented v-model:value="range" :options="rangeOptions" size="small" />
       </div>
     </template>
@@ -17,15 +17,18 @@ import type { EChartsOption } from 'echarts'
 
 import BaseCard from '@/components/BaseCard/index.vue'
 import EChart from '@/components/EChart/index.vue'
-import { getDeviceTrend } from '../device.api'
+import { useI18n } from '@/i18n'
+import { getDeviceTrend } from '../../../api/dashboard'
 
 type Range = '7d' | '30d'
 
+const { t } = useI18n()
+
 const range = ref<Range>('7d')
-const rangeOptions = [
-  { label: '近 7 天', value: '7d' },
-  { label: '近 30 天', value: '30d' },
-]
+const rangeOptions = computed(() => [
+  { label: t('dashboard.chart.range7d'), value: '7d' },
+  { label: t('dashboard.chart.range30d'), value: '30d' },
+])
 
 const trend = ref<{ labels: string[]; values: number[] }>({ labels: [], values: [] })
 
@@ -64,7 +67,7 @@ const option = computed<EChartsOption>(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: @spacing-md;
   padding-bottom: @spacing-md;
 }
 

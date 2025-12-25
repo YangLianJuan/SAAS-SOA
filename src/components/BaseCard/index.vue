@@ -54,7 +54,7 @@ const variantClass = computed(() => (props.variant ? `saas-card--${props.variant
 }
 
 .saas-card--compact :deep(.ant-card-body) {
-  padding: 12px;
+  padding: @spacing-md;
 }
 
 .saas-card--hover {

@@ -5,7 +5,7 @@
       <div v-if="$slots.toolbar" class="pro-table__toolbar">
         <slot name="toolbar" />
       </div>
-      <a-button size="small" @click="reload">刷新</a-button>
+      <a-button size="small" @click="reload">{{ t('common.refresh') }}</a-button>
     </div>
 
     <a-table
@@ -23,6 +23,10 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, useAttrs, useSlots, watch } from 'vue'
+
+import { useI18n } from '@/i18n'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   title?: string
@@ -69,7 +73,7 @@ const paginationConfig = computed(() => ({
   pageSize: pagination.pageSize,
   total: pagination.total,
   showSizeChanger: true,
-  showTotal: (t: number) => `共 ${t} 条`,
+  showTotal: (total: number) => t('common.total', { total }),
 }))
 
 const resolvedColumns = computed(() =>

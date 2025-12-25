@@ -1,14 +1,18 @@
 <template>
   <div class="device-status">
     <div class="device-status__name">{{ device.name }}</div>
-    <div class="device-status__meta">ID: {{ device.id }}</div>
+    <div class="device-status__meta">{{ t('device.deviceId', { id: device.id }) }}</div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from '@/i18n'
+
 defineProps<{
   device: { id: string; name: string }
 }>()
+
+const { t } = useI18n()
 </script>
 
 <style scoped lang="less">
@@ -22,4 +26,3 @@ defineProps<{
   color: @color-text-secondary;
 }
 </style>
-

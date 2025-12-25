@@ -3,8 +3,8 @@
     :open="open"
     :title="title"
     :confirm-loading="confirmLoading"
-    :ok-text="okText"
-    :cancel-text="cancelText"
+    :ok-text="resolvedOkText"
+    :cancel-text="resolvedCancelText"
     :ok-button-props="{ danger }"
     :destroy-on-close="destroyOnClose"
     v-bind="modalAttrs"
@@ -20,6 +20,8 @@
 <script setup lang="ts">
 import { computed, useAttrs } from 'vue'
 
+import { useI18n } from '@/i18n'
+
 const props = withDefaults(
   defineProps<{
     open: boolean
@@ -34,14 +36,14 @@ const props = withDefaults(
   }>(),
   {
     content: '',
-    okText: '确定',
-    cancelText: '取消',
     danger: false,
     confirmLoading: false,
     destroyOnClose: true,
     onOk: undefined,
   },
 )
+
+const { t } = useI18n()
 
 const emit = defineEmits<{
   (e: 'update:open', v: boolean): void
@@ -51,6 +53,9 @@ const emit = defineEmits<{
 
 const attrs = useAttrs()
 const modalAttrs = computed(() => attrs)
+
+const resolvedOkText = computed(() => props.okText ?? t('common.confirm'))
+const resolvedCancelText = computed(() => props.cancelText ?? t('common.cancel'))
 
 const handleCancel = () => {
   emit('cancel')

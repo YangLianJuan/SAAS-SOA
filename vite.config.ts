@@ -13,7 +13,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       less: {
-        additionalData: `@import "@/styles/design-system/index.less";`,
+        additionalData: `@import (reference) "@/styles/global.less";`,
       },
     },
   },

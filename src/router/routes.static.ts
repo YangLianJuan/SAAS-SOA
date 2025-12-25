@@ -12,7 +12,7 @@ export const staticRoutes: RouteRecordRaw[] = [
         path: '',
         name: 'Login',
         component: () => import('@/views/login/index.vue'),
-        meta: { public: true, title: '登录' },
+        meta: { public: true, titleKey: 'login.title' },
       },
     ],
   },
@@ -25,13 +25,13 @@ export const staticRoutes: RouteRecordRaw[] = [
         path: 'dashboard',
         name: 'Dashboard',
         component: () => import('@/views/dashboard/index.vue'),
-        meta: { title: '首页' },
+        meta: { titleKey: 'common.nav.dashboard' },
       },
       {
         path: 'device',
         name: 'Device',
         component: () => import('@/views/device/index.vue'),
-        meta: { title: '设备' },
+        meta: { titleKey: 'common.nav.device' },
       },
     ],
   },
@@ -40,4 +40,3 @@ export const staticRoutes: RouteRecordRaw[] = [
     redirect: '/dashboard',
   },
 ]
-

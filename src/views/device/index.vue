@@ -1,11 +1,11 @@
 <template>
   <div class="device-page">
     <div class="device-page__header">
-      <div class="device-page__title">设备</div>
+      <div class="device-page__title">{{ t('device.title') }}</div>
     </div>
 
     <ProTable
-      title="设备列表"
+      :title="t('device.listTitle')"
       :columns="columns"
       :loading="loading"
       :data-source="devices"
@@ -30,21 +30,24 @@ import BaseCard from '@/components/BaseCard/index.vue'
 import ProTable from '@/components/ProTable/index.vue'
 import StatusTag from '@/components/StatusTag/index.vue'
 import { useTable } from '@/composables/useTable'
+import { useI18n } from '@/i18n'
 import { getDeviceList, type Device, type DeviceStatusType } from './device.api'
 import DeviceStatus from './components/DeviceStatus.vue'
 
+const { t } = useI18n()
+
 const columns = computed(() => [
-  { key: 'name', title: '设备名称' },
-  { key: 'status', title: '状态' },
-  { key: 'actions', title: '详情' },
+  { key: 'name', title: t('device.columns.name') },
+  { key: 'status', title: t('device.columns.status') },
+  { key: 'actions', title: t('device.columns.actions') },
 ])
 
 const { loading, dataSource: devices, run } = useTable<Device>()
 
 const statusText = (s: DeviceStatusType) => {
-  if (s === 'online') return '在线'
-  if (s === 'offline') return '离线'
-  return '异常'
+  if (s === 'online') return t('device.status.online')
+  if (s === 'offline') return t('device.status.offline')
+  return t('device.status.error')
 }
 
 onMounted(() => {

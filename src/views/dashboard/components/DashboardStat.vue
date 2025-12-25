@@ -1,25 +1,36 @@
 <template>
-  <div class="dashboard-stat">
-    <BaseCard>
-      <div class="stat-card__title">设备总数</div>
-      <div class="stat-card__value">{{ stats.devices }}</div>
-    </BaseCard>
-    <BaseCard>
-      <div class="stat-card__title">在线设备</div>
-      <div class="stat-card__value">{{ stats.online }}</div>
-    </BaseCard>
-    <BaseCard>
-      <div class="stat-card__title">告警数</div>
-      <div class="stat-card__value">{{ stats.alerts }}</div>
-    </BaseCard>
-  </div>
+  <a-row :gutter="[layoutGutterMd, layoutGutterMd]">
+    <a-col :xs="24" :md="8">
+      <BaseCard>
+        <div class="stat-card__title">{{ t('dashboard.stat.devicesTotal') }}</div>
+        <div class="stat-card__value">{{ stats.devices }}</div>
+      </BaseCard>
+    </a-col>
+    <a-col :xs="24" :md="8">
+      <BaseCard>
+        <div class="stat-card__title">{{ t('dashboard.stat.onlineDevices') }}</div>
+        <div class="stat-card__value">{{ stats.online }}</div>
+      </BaseCard>
+    </a-col>
+    <a-col :xs="24" :md="8">
+      <BaseCard>
+        <div class="stat-card__title">{{ t('dashboard.stat.alerts') }}</div>
+        <div class="stat-card__value">{{ stats.alerts }}</div>
+      </BaseCard>
+    </a-col>
+  </a-row>
 </template>
 
 <script setup lang="ts">
 import { onMounted, reactive } from 'vue'
 
 import BaseCard from '@/components/BaseCard/index.vue'
-import { getDashboardStats } from '../device.api'
+import { useI18n } from '@/i18n'
+import { layoutGutter } from '@/styles/tokens'
+import { getDashboardStats } from '../../../api/dashboard'
+
+const { t } = useI18n()
+const layoutGutterMd = layoutGutter.md
 
 const stats = reactive({
   devices: 128,
