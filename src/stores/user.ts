@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
-import { login as loginApi } from '@/api'
+import { login as loginApi } from "@/api/login";
 import { clearToken, getToken, setToken } from '@/utils/auth'
 
 type UserProfile = {
